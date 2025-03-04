@@ -145,7 +145,7 @@ def _(mo):
         """
     )
     return
-
+# Add a sliding visual interpretation of the simplex algorithm and LPs using marimo
 
 @app.cell
 def _(mo):
