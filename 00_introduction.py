@@ -151,18 +151,32 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(
+        """
+        ### **Visualizing the Simplex Algorithm**
+        Use the below slider and corresponding to visual to visualize the way the Simplex algorithm moves along the edges of the feasible region
+        """
+    )
+    return
+
+
+@app.cell(hide_code=True)
 def _(mo, np):
-    mo.md("""### **Visualizing the Simplex Algorithm**""")
+
     vertices = [
         [0, 0, 200],
         [0, 100, 200],
-        [200,150,150],
+        [200,50,300],
         [300,200,-100],
         [300, 300, -200],
     ]
     vertex_values = np.arange(0,len(vertices))
-    simplex_slider = mo.ui.slider(steps=vertex_values)
+
+
+    simplex_slider = mo.ui.slider(steps=vertex_values,show_value=True,label="Vertex")
+
     simplex_slider
     return simplex_slider, vertex_values, vertices
 
@@ -189,9 +203,9 @@ def _(np, plt, simplex_slider, vertices):
 
     def plot_polyhedron(vertex_index):
         # Create a grid of x1, x2, x3 values to check the feasibility region
-        x1_vals = np.linspace(0, 300, 50)
-        x2_vals = np.linspace(0, 300, 50)
-        x3_vals = np.linspace(0, 300, 50)
+        x1_vals = np.linspace(0, 300, 10)
+        x2_vals = np.linspace(0, 300, 10)
+        x3_vals = np.linspace(0, 300, 10)
 
         # Create meshgrid for plotting
         X1, X2 = np.meshgrid(x1_vals, x2_vals)
@@ -217,20 +231,23 @@ def _(np, plt, simplex_slider, vertices):
         # Create the plot
         fig = plt.figure()
         ax = fig.add_subplot(111, projection='3d')
-        ax.plot_surface(X1, X2, X3, cmap='viridis', edgecolor=edgecolor,alpha=1)
+        ax.plot_surface(X1, X2, X3, cmap='viridis', edgecolor=edgecolor,alpha=1,zorder=1)
 
         # Add the selected vertex as a red point
-        ax.scatter(vertex_to_add[0], vertex_to_add[1], vertex_to_add[2], color='r', s=50)
+        ax.scatter(vertex_to_add[0], vertex_to_add[1], vertex_to_add[2], color='r', s=50,zorder=20)
 
         for i in range(1, vertex_index + 1):
             ax.plot([vertices[i-1][0], vertices[i][0]], 
                     [vertices[i-1][1], vertices[i][1]], 
-                    [vertices[i-1][2], vertices[i][2]], color='r')
+                    [vertices[i-1][2], vertices[i][2]], color='r',
+                    linewidth=5, linestyle=":",zorder=5)
 
         # Label the axes
         ax.set_xlabel('x1')
         ax.set_ylabel('x2')
         ax.set_zlabel('x3')
+
+        plt.title("Simplex Visualization")
 
         # Show the plot
         plt.show()
@@ -273,7 +290,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
     mo.md(
         r"""
@@ -298,7 +315,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
     mo.md(
         r"""
@@ -412,11 +429,11 @@ def _():
     import numpy as np
     import matplotlib.pyplot as plt
     from mpl_toolkits.mplot3d import Axes3D
-    from scipy.spatial import ConvexHull
-    return Axes3D, ConvexHull, mo, np, plt
+
+    return Axes3D, mo, np, plt
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _():
     return
 

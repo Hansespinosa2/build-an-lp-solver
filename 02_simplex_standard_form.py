@@ -93,6 +93,55 @@ def _(mo):
 def _(mo):
     mo.md(
         r"""
+        ### **1.2. Data Setup**
+        In order for us to to implement the simplex algorithm using the above example data, we need to set up the data.
+    
+        **Instruction:** Create `np.array` variables `A,b,c` to represent the matrices above. Output them to verify they are correct.
+        """
+    )
+    return
+
+
+@app.cell
+def _(np):
+    A = np.array([
+        [1, 5, 40, 10, 12, 20, -1, 0, 0, 0],
+        [10, 1, 6, 9, 5, 3, 0, 1, 0, 0],
+        [1, 1, 1, 1, 1, 1, 0, 0, 1, 0],
+        [1, 3, -3, -2, -1, 2, 0, 0, 0, -1]
+    ])
+
+    b = np.array([
+        20, 10, 200000, 0
+    ])
+    c = np.array([
+        0.10, 0.50, 0.25, 0.30, 0.10, 0.20, 0, 0, 0, 0
+    ])
+    A, b, c
+    return A, b, c
+
+
+@app.cell
+def _(mo):
+    mo.md(
+        r"""
+        ### **1.3. Shape Validation**
+        **Instruction:** Output the shapes of the matrices `A`, `b`, and `c` to ensure they are consistent with the LP formulation.
+        """
+    )
+    return
+
+
+@app.cell
+def _(A, b, c):
+    print(f"A's shape is {A.shape}, b's shape is {b.shape}, c's shape is {c.shape}")
+    return
+
+
+@app.cell
+def _(mo):
+    mo.md(
+        r"""
         ## **2. Setting Up the Initial Simplex Tableau**
         The Simplex method uses a **tableau representation** to keep track of the constraints and objective function.
         The tableau consists of:
@@ -105,16 +154,19 @@ def _(mo):
 
 
 @app.cell
-def _(np):
+def _(A, b, c, np, simplex_method):
     def initialize_simplex_tableau(A, b, c):
         """Create the initial simplex tableau given A, b, and c."""
         m, n = A.shape
-        tableau = np.zeros((m + 1, n + m + 1))  # Extra column for b values
-        tableau[:-1, :-1] = np.hstack((A, np.eye(m)))  # Slack variables added
+        tableau = np.zeros((m + 1, n+ 1))  # Extra column for b values
+        tableau[:-1,:-1] = A
         tableau[:-1, -1] = b  # RHS values
         tableau[-1, :-1] = -c  # Objective function row (negated for maximization)
         return tableau
-    return (initialize_simplex_tableau,)
+
+    tableau = initialize_simplex_tableau(A,b,c)
+    tableau = simplex_method(tableau)
+    return initialize_simplex_tableau, tableau
 
 
 @app.cell
