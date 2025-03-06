@@ -7,7 +7,7 @@ app = marimo.App(width="medium")
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(
-        """
+        r"""
         # Build Your Own LP Solver: Introduction
         This project is a step-by-step walkthrough of how to build your own LP solver.
         """
@@ -24,7 +24,7 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(
-        """
+        r"""
         ### **Project Introduction**
         This project aims to provide an educational platform where users can build their own Linear Programming (LP) Simplex Solver from scratch. 
         The Simplex algorithm is one of the most widely used methods for solving LP problems, and by building it from scratch, users will gain a deeper understanding of optimization theory, linear algebra, and algorithmic implementation.
@@ -37,7 +37,7 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(
-        """
+        r"""
         ### **Project Overview**
         This project consists of six structured files, completed in the following order:
 
@@ -55,7 +55,7 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(
-        """
+        r"""
         ## **Linear Programming Overview**
         Linear Programming is a subsection of mathematical optimization that deals with a linear objective function and a linear set of constraints.
         A *linear program* is a mathematical formulation that models a real-world problem.
@@ -69,7 +69,7 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(
-        """
+        r"""
         ### **Example Problem - Protein Shake Diet**
         Take the following example:
 
@@ -138,102 +138,131 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(
-        """
+        r"""
         ## **Simplex Algorithm Overview**
         The Simplex method is a powerful algorithm used to solve LP problems. 
         In this project, we will implement the Simplex method step-by-step to build a custom LP solver.
+
+        The **Simplex Algorithm** is one of the most widely used methods for solving **Linear Programming (LP) problems**. It is an iterative, **tableau-based** method that efficiently finds the optimal solution by moving along the edges of the feasible region.
         """
     )
     return
-# Add a sliding visual interpretation of the simplex algorithm and LPs using marimo
 
-@app.cell
+
+@app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""
-        # **The Simplex Algorithm: A Step-by-Step Overview**
-
-        The **Simplex Algorithm** is one of the most widely used methods for solving **Linear Programming (LP) problems**. It is an iterative, **tableau-based** method that efficiently finds the optimal solution by moving along the edges of the feasible region.
-
-        ## **1. Understanding the Simplex Algorithm**
-
+    mo.md(
+        r"""
+        ### **1. Understanding the Simplex Algorithm**
         Given a **linear program in standard form**:
 
         **Objective Function**:  
-        $$\text{Maximize } Z = c^T x$$
+        $$\text{Minimize } c^T x$$
 
         **Subject to Constraints**:  
         $$Ax = b, \quad x \geq 0$$
 
         where:
-        - \( x \) is the vector of **decision variables**.
-        - \( A \) is the **constraint coefficient matrix**.
-        - \( b \) is the **right-hand side (RHS)** vector.
-        - \( c^T \) is the **cost (objective) vector**.
+
+        - $x$ is the vector of **decision variables**.
+        - $A$ is the **constraint coefficient matrix**.
+        - $b$ is the **right-hand side (RHS)** vector.
+        -  $c^T$ is the **cost (objective) vector**.
 
         The **Simplex Method** starts at a **basic feasible solution** (BFS) and iteratively improves it by pivoting between adjacent extreme points until the optimal solution is found.
+        """
+    )
+    return
 
-        ---
-        ## **2. Simplex Tableau Representation**
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(
+        r"""
+        ### **2. Simplex Tableau Representation**
 
         We convert the standard form LP into a **Simplex Tableau**, an augmented matrix that allows efficient row operations.
 
         A **Simplex Tableau** for the LP:
 
-        | Basis  | \( x_1 \) | \( x_2 \) | \( s_1 \) | \( s_2 \) | RHS  |
+        | Basis  |  $x_1$ | $x_2$ | $s_1$ | $s_2$ | RHS  |
         |--------|------|------|------|------|------|
-        | \( s_1 \)  | 2  | 1  | 1  | 0  | 4  |
-        | \( s_2 \)  | 1  | 2  | 0  | 1  | 6  |
-        | **Z-row** | -3  | -5  | 0  | 0  | 0  |
+        | $s_1$  | 2  | 1  | 1  | 0  | 4  |
+        | $s_2$  | 1  | 2  | 0  | 1  | 6  |
+        | **Reduced Costs** | -3  | -5  | 0  | 0  | 0  |
 
         - **Decision variables** (\( x_1, x_2 \)) are in columns.
         - **Slack variables** (\( s_1, s_2 \)) track excess capacity.
         - **RHS (b-column)** holds constraint values.
-        - **Z-row (bottom row)** represents the negative reduced costs.
+        - **Reduced Costs** represents the negative reduced costs.
+        """
+    )
+    return
 
-        ---
-        ## **3. The Simplex Algorithm Steps**
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(
+        r"""
+        ### **3. The Simplex Algorithm Steps**
 
         The algorithm follows **three key steps** iteratively until the optimal solution is reached:
 
-        ### **Step 1: Identify Entering Variable (Pivot Column)**
+        #### **Step 1: Identify Entering Variable (Pivot Column)**
         - Choose the most negative coefficient in the **Z-row** (Objective row).
+               -  *Note: There exist many other criteria to determine the entering variable, which we be explored in the code later in this tutorial.*
         - This corresponds to the variable that **most improves the objective function**.
         - If all coefficients are **non-negative**, the current solution is **optimal**.
 
         $$x_{\text{enter}} = \arg\min(c_j)$$
 
-        ### **Step 2: Identify Leaving Variable (Pivot Row)**
+        #### **Step 2: Identify Leaving Variable (Pivot Row)**
         - Compute the **minimum ratio test** to determine the **leaving variable**.
-        - The row with the **smallest positive** \( \frac{\text{RHS}}{\text{Pivot Column}} \) value is chosen.
+        - The row with the **smallest positive**  $\frac{\text{RHS}}{\text{Pivot Column}}$ value is chosen.
 
         $$x_{\text{leave}} = \arg\min \left( \frac{b_i}{a_{i,j}} \right), \quad a_{i,j} > 0$$
 
         - If no **valid positive ratios** exist, the problem is **unbounded**.
 
-        ### **Step 3: Pivoting**
+        #### **Step 3: Pivoting**
         - Perform **row operations** to make the pivot column into a **unit column**.
         - Normalize the pivot row by dividing it by the pivot element.
         - Update other rows using row reduction.
+        """
+    )
+    return
 
-        ---
-        ## **4. Iterating Until Optimality**
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(
+        r"""
+        ### **4. Iterating Until Optimality**
         - Repeat **Steps 1 to 3** until:
             - No negative coefficients remain in the Z-row (**Optimal Solution Found**).
             - No valid pivot exists (**Unbounded Solution**).
             - Degeneracy occurs (**Cycling Prevention Needed**).
+                - *Note: Ignore cycling for now*
+        """
+    )
+    return
 
-        ---
-        ## **5. Example Walkthrough**
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(
+        r"""
+        ### **5. Example Walkthrough**
         Consider the LP:
 
-        $$\text{Maximize } Z = 3x_1 + 5x_2$$
+        $$\text{Minimize } Z = 3x_1 + 5x_2$$
 
         Subject to:
 
         $$2x_1 + x_2 \leq 4$$
-    
+
         $$x_1 + 2x_2 \leq 6$$
-    
+
         $$x_1, x_2 \geq 0$$
 
         **Standard Form Conversion:**
@@ -241,26 +270,27 @@ def _(mo):
         - The tableau representation is set up as shown earlier.
 
         The **Simplex Algorithm** iterates through pivot operations until an **optimal solution** is found.
-
-        ---
-        ## **6. Implementation Notes**
-        - Commercial solvers like **Gurobi and CPLEX** use **advanced pivoting strategies**.
-        - Variants like **Revised Simplex Method** and **Dual Simplex** improve performance.
-
-        ---
-        ## **7. Next Steps**
-        - **Implementing the Simplex Algorithm in Python**
-        - **Handling Degeneracy, Cycling, and Special Cases**
-        - **Comparing Against Commercial Solvers**
-
-        """)
+        """
+    )
     return
 
 
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(
+        r"""
+        ### **6. Implementation Notes**
+        - Commercial solvers like **Gurobi and CPLEX** use **advanced pivoting strategies**.
+        - Variants like **Revised Simplex Method** and **Dual Simplex** improve performance.
         """
+    )
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(
+        r"""
         ## **Project Dependencies**
         To follow along, ensure you have the following dependencies installed:
 
@@ -272,16 +302,16 @@ def _(mo):
     return
 
 
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""## **File Imports**""")
+    return
+
+
 @app.cell
 def _():
     import marimo as mo
-    mo.md("""## **File Imports**""")
     return (mo,)
-
-
-@app.cell
-def _():
-    return
 
 
 if __name__ == "__main__":
