@@ -151,6 +151,102 @@ def _(mo):
     return
 
 
+@app.cell
+def _(mo, np):
+    mo.md("""### **Visualizing the Simplex Algorithm**""")
+    vertices = [
+        [0, 0, 200],
+        [0, 100, 200],
+        [200,150,150],
+        [300,200,-100],
+        [300, 300, -200],
+    ]
+    vertex_values = np.arange(0,len(vertices))
+    simplex_slider = mo.ui.slider(steps=vertex_values)
+    simplex_slider
+    return simplex_slider, vertex_values, vertices
+
+
+@app.cell(hide_code=True)
+def _(np, plt, simplex_slider, vertices):
+    from matplotlib.colors import colorConverter
+
+    edgecolor = colorConverter.to_rgba('k', alpha=.1)
+
+    # Define the constraints
+    def constraint_1(x1):
+        return 200 - x1
+
+    def constraint_2(x2):
+        return 300 - x2
+
+    def constraint_3(x1, x2):
+        return 400 - (x1 + x2)
+
+    def constraint_4(x2, x3):
+        return 600 - (x2 + 3*x3)
+
+
+    def plot_polyhedron(vertex_index):
+        # Create a grid of x1, x2, x3 values to check the feasibility region
+        x1_vals = np.linspace(0, 300, 50)
+        x2_vals = np.linspace(0, 300, 50)
+        x3_vals = np.linspace(0, 300, 50)
+
+        # Create meshgrid for plotting
+        X1, X2 = np.meshgrid(x1_vals, x2_vals)
+        X3 = np.zeros_like(X1)
+
+        # Apply constraints
+        for i in range(len(x1_vals)):
+            for j in range(len(x2_vals)):
+                x1 = X1[i,j]
+                x2 = X2[i,j]
+                # Define maximum possible x3 value based on constraints
+                x3_1 = constraint_1(x1)
+                x3_2 = constraint_2(x2)
+                x3_3 = constraint_3(x1, x2)
+                x3_4 = constraint_4(x2, 0)
+                X3[i,j] = min(x3_1, x3_2, x3_3, x3_4)
+                x3 = X3[i,j]
+
+
+        vertex_to_add = vertices[vertex_index]
+
+
+        # Create the plot
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection='3d')
+        ax.plot_surface(X1, X2, X3, cmap='viridis', edgecolor=edgecolor,alpha=1)
+
+        # Add the selected vertex as a red point
+        ax.scatter(vertex_to_add[0], vertex_to_add[1], vertex_to_add[2], color='r', s=50)
+
+        for i in range(1, vertex_index + 1):
+            ax.plot([vertices[i-1][0], vertices[i][0]], 
+                    [vertices[i-1][1], vertices[i][1]], 
+                    [vertices[i-1][2], vertices[i][2]], color='r')
+
+        # Label the axes
+        ax.set_xlabel('x1')
+        ax.set_ylabel('x2')
+        ax.set_zlabel('x3')
+
+        # Show the plot
+        plt.show()
+
+    plot_polyhedron(simplex_slider.value)
+    return (
+        colorConverter,
+        constraint_1,
+        constraint_2,
+        constraint_3,
+        constraint_4,
+        edgecolor,
+        plot_polyhedron,
+    )
+
+
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(
@@ -177,7 +273,7 @@ def _(mo):
     return
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(mo):
     mo.md(
         r"""
@@ -202,7 +298,7 @@ def _(mo):
     return
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _(mo):
     mo.md(
         r"""
@@ -310,10 +406,19 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _():
     import marimo as mo
-    return (mo,)
+    import numpy as np
+    import matplotlib.pyplot as plt
+    from mpl_toolkits.mplot3d import Axes3D
+    from scipy.spatial import ConvexHull
+    return Axes3D, ConvexHull, mo, np, plt
+
+
+@app.cell
+def _():
+    return
 
 
 if __name__ == "__main__":
