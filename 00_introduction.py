@@ -10,6 +10,7 @@ def _(mo):
         r"""
         # Build Your Own LP Solver: Introduction
         This project is a step-by-step walkthrough of how to build your own LP solver.
+        This notebook is the first in a series of tutorial notebooks that will guide you in your own implementation of the Simplex algorithm to solve linear programming problems.
         """
     )
     return

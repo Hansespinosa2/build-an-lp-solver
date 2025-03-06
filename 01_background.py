@@ -6,7 +6,14 @@ app = marimo.App(width="medium")
 
 @app.cell
 def _(mo):
-    mo.md(r"# Hi")
+    mo.md(
+        r"""
+        # Build Your Own LP Solver: Background
+        This project is a step-by-step walkthrough of how to build your own LP solver.
+    
+        This is the second notebook in the series and is an optional file filled with exercises on Linear Programming, Matrices, Python, and algorithm implementation.
+        """
+    )
     return
 
 
