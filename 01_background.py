@@ -81,11 +81,90 @@ def _(mo):
     
         $$10x_1 + 1x_2 + 6x_3 + 9x_4 + 5x_5 + 3x_6 \leq 10 \textit{ (Sugar Constraint)}$$
     
-        $$100(x_1 + x_2 + x_3 + x_4 + x_5 + x_6) \geq 20,000,000 \textit{ (Demand Constraint)}$$
+        $$x_1 + x_2 + x_3 + x_4 + x_5 + x_6 \geq 200,000 \textit{ (Demand Constraint)}$$
     
         $$8x_1 + 10x_2 + 4x_3 + 5x_4 + 6x_5 + 9x_6 \geq 7(x_1 + x_2 + x_3 + x_4 + x_5 + x_6) \textit{ (Taste Constraint)}$$
     
         $$x_1, x_2, x_3, x_4, x_5, x_6 \geq 0 \textit{ (Non-Negativity Constraint)}$$
+    
+        *Note: Depending on the specific unit of measurement chosen (kg, g, 100g), your answer may look slightly different.*
+        """
+    )
+    return
+
+
+@app.cell
+def _(mo):
+    mo.md(
+        r"""
+        ### **1.2. Standard Form Protein Shake**
+        Standard form is a way to represent a linear program in a more general form. The standard form of a linear program is as follows:
+    
+        $$\text{Minimize } c^Tx$$
+    
+        $$\text{Subject to }  Ax = b$$
+    
+        $$x \geq 0$$
+    
+        **Exercise:** Convert the protein shake problem from [1.1.](#1.1.-Protein-Shake-Formulation)  into standard form.
+        """
+    )
+    return
+
+
+@app.cell
+def _(mo):
+    mo.md(
+        r"""
+        #### **1.2. Solution to Standard Protein Shake**
+        To convert the protein shake problem into standard form, we first distribute and rearrange the  *taste* constraint so all variables are in the left side of either the inequality:
+    
+        $$x_1 + 3x_2 -3x_3 -2x_4 -x_5 + 2x_6 \geq 0 \textit{ (Rearranged Taste Constraint)}$$
+    
+        Next we convert each inequality into an equality by introducing slack variables (-) for $\geq$ inequalities and surplus variables (+) for $\leq$ inequalities:
+    
+        $$1x_1 + 5x_2 + 40x_3 + 10x_4 + 12x_5 + 20x_6 - s_1 = 20 \textit{ (Protein Constraint)}$$
+    
+        $$10x_1 + 1x_2 + 6x_3 + 9x_4 + 5x_5 + 3x_6 + s_2 = 10 \textit{ (Sugar Constraint)}$$
+    
+        $$x_1 + x_2 + x_3 + x_4 + x_5 + x_6 + s_3 = 200,000 \textit{ (Demand Constraint)}$$
+    
+        $$x_1 + 3x_2 -3x_3 -2x_4 -x_5 + 2x_6 - s_4 = 0 \textit{ (Rearranged Taste Constraint)}$$
+    
+        Finally, we combine all the constraints into a matrix form:
+    
+        $$
+        A = \begin{bmatrix}
+        1 & 5 & 40 & 10 & 12 & 20 & -1 & 0 & 0 & 0 \\
+        10 & 1 & 6 & 9 & 5 & 3 & 0 & 1 & 0 & 0 \\
+        1 & 1 & 1 & 1 & 1 & 1 & 0 & 0 & 1 & 0 \\
+        1 & 3 & -3 & -2 & -1 & 2 & 0 & 0 & 0 & -1
+        \end{bmatrix}
+        $$
+    
+        $$
+        b = \begin{bmatrix}
+        20 \\
+        10 \\
+        200,000 \\
+        0
+        \end{bmatrix}
+        $$
+    
+        $$
+        c = \begin{bmatrix}
+        0.10 \\
+        0.50 \\
+        0.25 \\
+        0.30 \\
+        0.10 \\
+        0.20 \\
+        0 \\
+        0 \\
+        0 \\
+        0
+        \end{bmatrix}
+        $$
         """
     )
     return
