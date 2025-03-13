@@ -180,7 +180,7 @@ def _(mo):
 def _(mo):
     mo.md(
         r"""
-        ### **2.1. Linear Programming Classes**
+        ### **2.1. Python Math Class Objects**
         We can use an Object-Oriented Programming (OOP) approach to facilitate the way that we build the LP solver later in this tutorial.
         In this problem, we will build our own implementations of a few classes to help the way we perform the reductions in the `03_lp_reductions.py` notebook.
     
@@ -242,8 +242,98 @@ def _(mo):
 
 @app.cell
 def _(mo):
-    mo.md(r"### ****")
+    mo.md(
+        r"""
+        ### **3.2 Standard Form Constraint Validation**
+        `NumPy` is a powerful python package that we will be using throughout this project not only to perform matrix math, but also to handle equation logic. In this exercise, we will use `NumPy` to validate the constraints of a standard form linear program.
+    
+        **Exercise**: Implement a function called `validate_constraints` that takes in the following parameters:
+    
+        - $\mathbf{A}$ (`np.array`): The matrix of coefficients for the constraints
+        - $\mathbf{b}$ (`np.array`): The right-hand side of the constraints
+        - $\mathbf{x}$ (`np.array`): The solution to the linear program
+    
+        and returns a boolean value indicating whether the solution satisfies all the constraints.
+    
+        $$
+        \mathbf{A} \mathbf{x} = \mathbf{b} \\
+        \mathbf{x} \geq 0 \\
+        \mathbf{A} \text{ and } \mathbf{b} \text{ must have the same number of rows} \\
+        \mathbf{A} \text{ and } \mathbf{x} \text{ must have the same number of columns}
+        $$
+    
+        If the solution satisfies all the constraints, the function should return `True`. Otherwise, it should return `False` and it should print out which constraint was violated.
+    
+        *Due to floating point numbers, equalities may fail. Therefore, ensure up to some tolerance that the contraint $\mathbf{A} \mathbf{x} = \mathbf{b}$ is "close enough"*
+        """
+    )
     return
+
+
+@app.cell
+def _(np):
+    def validate_constraints(A, b, x):
+        if A.shape[0] != b.shape[0]:
+            print("Constraint violated: A and b must have the same number of rows")
+            return False
+  
+        if A.shape[1] != x.shape[0]:
+            print("Constraint violated: A and x must have the same number of columns")
+            return False
+    
+        if np.any(x < 0):
+            print("Constraint violated: x contains negative values")
+            return False
+    
+        tolerance= 1E-6
+        if not np.all(np.abs(A @ x - b) <= tolerance):
+            print("Constraint violated: A * x != b")
+            return False
+        print("All constraints passed! This solution is feasible")
+        return True
+    return (validate_constraints,)
+
+
+@app.cell
+def _(mo):
+    mo.md(
+        r"""
+        ### **3.3 Function Testing**
+        This problem involves testing the function you implemented in the problem [3.2.](#32-standard-form-constraint-validation) to ensure that it works as expected.
+    
+        **Exercise**: First, convert the [1.2.](#12-standard-form-protein-shake) problem data into `np.array` objects and then test the `validate_constraints` function on the following $\textbf{x}$ arrays:
+    
+        - $\textbf{x} = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]$ 
+        - $\textbf{x} = [0, 4, 0, 0, 0, 0, 0, 6, 199996, 12]$
+        - $\textbf{x} = [0, 0, 0]$
+        - $\textbf{x} = [0, 0, 0, 0, 0, 0, 0, -20, 10, 200000, 0]$
+        """
+    )
+    return
+
+
+@app.cell
+def _(np, validate_constraints):
+    A_33 = np.array([
+      [1, 5, 40, 10, 12, 20, -1, 0, 0, 0],
+      [10, 1, 6, 9, 5, 3, 0, 1, 0, 0],
+      [1, 1, 1, 1, 1, 1, 0, 0, 1, 0],
+      [1, 3, -3, -2, -1, 2, 0, 0, 0, -1]
+    ])
+
+    b_33 = np.array([20, 10, 200000, 0])
+
+    x_col = [
+        np.zeros(A_33.shape[1]),
+        np.array([0, 4, 0, 0, 0, 0, 0, 6, 199996, 12]),
+        np.zeros(3),
+        np.r_[np.zeros(6), np.array([-20, 10, 200000, 0])]
+    ]
+
+    for x in x_col:
+        validate_constraints(A_33, b_33, x)
+    
+    return A_33, b_33, x, x_col
 
 
 @app.cell
